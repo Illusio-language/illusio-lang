@@ -1,0 +1,11 @@
+[package]
+name = "illusio-2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+codespan-reporting = "0.11.1"
+colored = "2.0.0"
+inflections = "1.1.1"

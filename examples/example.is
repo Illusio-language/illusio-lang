@@ -1,0 +1,19 @@
+#*
+    My multi line comment
+*# 
+# My comment
+hamza int = 5
+# My if statement
+if hamza == 5
+    print ("hi")
+end
+#*
+    Human Enum has:
+        - Alive,
+        - Dead
+*#
+enum Human
+    Alive,
+    Dead
+end
+hamza int = Human:Alive # Means 0
