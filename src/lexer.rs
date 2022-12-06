@@ -71,7 +71,7 @@ impl Lexer {
         }
     }
     /// Peeking for the next byte
-    fn peek_next(&self) -> Option<u8> {
+    pub fn peek_next(&self) -> Option<u8> {
         return self.input.get(self.read_position).copied();
     }
     pub fn next(&mut self) -> Token {
@@ -321,6 +321,7 @@ impl Lexer {
             "bool" => TokenKind::BoolTy,
             "enum" => TokenKind::Enum,
             "end" => TokenKind::End,
+            "do" => TokenKind::Do,
             "true" => TokenKind::Bool(true),
             "false" => TokenKind::Bool(false),
             _ => TokenKind::Identifier,

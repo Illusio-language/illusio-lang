@@ -34,12 +34,12 @@ pub enum ExprKind {
     Binary(Box<Expr>, TokenKind, Box<Expr>),
     Unary(TokenKind, Box<Expr>),
     Ref(Box<Expr>),
-    /// Expr and stmts
     If(Box<Expr>, Vec<Expr>),
     Enum(String,Vec<String>),
     FunctionCall(String, Vec<Expr>), 
     FunctionDeclaration(String, Vec<Param>,Type,Vec<Expr>),
     Bool(bool),
+    Block(Vec<Expr>),
     Error,
     Eof,
 }

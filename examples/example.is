@@ -1,19 +1,7 @@
 #*
-    My multi line comment
-*# 
-# My comment
-hamza int = 5
-# My if statement
-if hamza == 5
-    print ("hi")
-end
-#*
-    Human Enum has:
-        - Alive,
-        - Dead
+    This will give an error, since a doesn't exist.
+    hamza int = a + 5
 *#
-enum Human
-    Alive,
-    Dead
-end
-hamza int = Human:Alive # Means 0
+hamza int = 5
+anotherVar int = hamza
+# todo type-checker

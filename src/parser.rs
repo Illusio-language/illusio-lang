@@ -33,7 +33,6 @@ impl Parser {
     fn next(&mut self) {
         self.position = self.lexer.position;
         self.current = self.lexer.next();
-        println!("{}", self.current);
         if !self.lexer.errors.is_empty() && !self.has_lexing_errors {
             self.has_lexing_errors = true;
         }
@@ -67,6 +66,36 @@ impl Parser {
                 inner: ExprKind::Eof,
                 span: self.current.span,
             },
+            TokenKind::Do => {
+                let start = self.position;
+                self.next();
+                let mut exprs: Vec<Expr> = Vec::new();
+                loop {
+                    if self.current.kind == TokenKind::End {
+                        self.next();
+                        break;
+                    }
+                    if self.current.kind == TokenKind::Eof {
+                        self.errors.push(Error {
+                            source: self.source.clone(),
+                            file_name: self.filename.clone(),
+                            message: "Expected `end` at end of block.".to_owned(),
+                            span: self.current.span,
+                            help: "".to_owned(),
+                        });
+                        self.next();
+                        return Expr {
+                            inner: ExprKind::Error,
+                            span: self.current.span,
+                        };
+                    }
+                    exprs.push(self.declaration());
+                }
+                return Expr {
+                    inner: ExprKind::Block(exprs),
+                    span: Span::from(start..self.position),
+                };
+            }
             TokenKind::Fun => {
                 let start = self.position;
                 self.next();
@@ -79,7 +108,6 @@ impl Parser {
                         let param_name = self.current.literal.clone();
                         self.next();
                         let param_type = self.parse_type();
-                        self.next();
                         params.push(Param {
                             param_type,
                             name: param_name,
@@ -96,7 +124,6 @@ impl Parser {
                 if self.current.kind == TokenKind::Colon {
                     self.next();
                     return_type = self.parse_type();
-                    self.next();
                 }
 
                 let mut exprs: Vec<Expr> = Vec::new();
@@ -124,7 +151,7 @@ impl Parser {
                 return Expr {
                     inner: ExprKind::FunctionDeclaration(name, params, return_type, exprs),
                     span: Span::from(start..self.position),
-                }
+                };
             }
 
             TokenKind::Enum => {
@@ -271,18 +298,20 @@ impl Parser {
             | TokenKind::StringTy
             | TokenKind::BoolTy
             | TokenKind::Asterisk => {
-                let ty = match self.current.kind {
+                let mut ty = match self.current.kind {
                     TokenKind::IntTy => Type::Int,
                     TokenKind::FloatTy => Type::Float,
                     TokenKind::StringTy => Type::String,
                     TokenKind::BoolTy => Type::Bool,
-                    TokenKind::Asterisk => {
-                        self.next();
-                        let type_ = self.parse_type();
-                        Type::Ptr(type_.boxed())
-                    }
+
                     _ => unreachable!(),
                 };
+                self.next();
+                if self.current.kind == TokenKind::Asterisk {
+                    self.next();
+                    ty = Type::Ptr(ty.boxed())
+                }
+
                 return ty;
             }
             _ => {
@@ -472,15 +501,13 @@ impl Parser {
                     TokenKind::IntTy
                     | TokenKind::FloatTy
                     | TokenKind::StringTy
-                    | TokenKind::BoolTy
-                    | TokenKind::Asterisk => {
+                    | TokenKind::BoolTy => {
                         let ty = self.parse_type();
-                        self.next();
                         self.expect(TokenKind::Equal);
                         let expr = self.parse_expr(0);
                         return Expr {
                             inner: ExprKind::Var(ident, expr.boxed(), ty),
-                            span: Span::from(span.start..self.lexer.position),
+                            span: Span::from(start + 1..self.lexer.position - 1),
                         };
                     }
                     TokenKind::OpeningParen => {
