@@ -2,15 +2,15 @@ use std::collections::{HashMap, HashSet};
 
 use crate::{ast::*, error::Error};
 
-pub struct Analyzer {
-    ast: Vec<Expr>,
+pub struct Analyzer<'a>{
+    ast: &'a Vec<Expr>,
     source: String,
     filename: String,
     variables: Vec<HashSet<String>>,
     errors: Vec<Error>,
 }
-impl Analyzer {
-    pub fn new(ast: Vec<Expr>, source: String, filename: String,) -> Self {
+impl <'a> Analyzer<'a> {
+    pub fn new(ast: &'a Vec<Expr>, source: String, filename: String,) -> Self {
         Self {
             ast,
             variables: vec![HashSet::new()],

@@ -1,7 +1,1 @@
-#*
-    This will give an error, since a doesn't exist.
-    hamza int = a + 5
-*#
-hamza int = 5
-anotherVar int = hamza
-# todo type-checker
+puts( "Hi" )

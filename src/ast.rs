@@ -40,6 +40,7 @@ pub enum ExprKind {
     FunctionDeclaration(String, Vec<Param>,Type,Vec<Expr>),
     Bool(bool),
     Block(Vec<Expr>),
+    Puts(Vec<Expr>),
     Error,
     Eof,
 }

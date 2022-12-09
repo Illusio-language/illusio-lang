@@ -56,6 +56,7 @@ impl Parser {
             let expr = self.declaration();
             exprs.push(expr.clone());
             if expr.inner == ExprKind::Eof {
+                exprs.pop();
                 return exprs;
             }
         }
@@ -125,7 +126,7 @@ impl Parser {
                     self.next();
                     return_type = self.parse_type();
                 }
-
+                self.expect(TokenKind::Do);
                 let mut exprs: Vec<Expr> = Vec::new();
                 loop {
                     if self.current.kind == TokenKind::End {
@@ -439,6 +440,7 @@ impl Parser {
                 self.expect(TokenKind::ClosingParen);
                 return expr;
             }
+
             TokenKind::Float => {
                 let span = self.current.span;
 
@@ -524,6 +526,12 @@ impl Parser {
                             }
                         }
                         self.expect(TokenKind::ClosingParen);
+                        if ident == "puts".to_owned() {
+                            return Expr {
+                                inner: ExprKind::Puts(args),
+                                span: Span::from(start..self.position),
+                            };
+                        }
                         return Expr {
                             inner: ExprKind::FunctionCall(ident, args),
                             span: Span::from(start..self.position),
